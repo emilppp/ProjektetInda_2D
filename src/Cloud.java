@@ -15,7 +15,7 @@ public class Cloud extends Unit {
 		ypos = r.nextInt(gc.getHeight()/2); 
 	}
 	
-	// TJENARE BENNY asdfsdads
+	// TJENARE BENNY
 	public void move() {
 		xpos += 0.05 * xDirection * velocity;
 		
