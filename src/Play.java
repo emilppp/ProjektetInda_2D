@@ -1,10 +1,11 @@
 import org.lwjgl.*;
+import org.lwjgl.input.Keyboard;
 import org.newdawn.slick.*;
 import org.newdawn.slick.gui.GUIContext;
 import org.newdawn.slick.state.*;
 import org.newdawn.slick.Color;
-import java.util.Iterator;
 
+import java.util.Iterator;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 
@@ -12,18 +13,23 @@ public class Play extends BasicGameState {
 
 	Image brick, cloud;
 
-	ArrayList<Unit> moving_scenery;
-	ArrayList<Foe> foes;
+	private ArrayList<Unit> moving_scenery;
+	private ArrayList<Foe> foes;
+	private ArrayList<Projectile> fireballs;
 
 	Character character;
+	//fireball cooldown
+	private float cooldown;
 
 	float menuX = 200;
 	float menuY = 200;
 
 	public Play(int state) {
 		character = null;
+		cooldown = 0;
 		foes = new ArrayList<Foe>();
 		moving_scenery = new ArrayList<Unit>();
+		fireballs = new ArrayList<Projectile>();
 	}
 
 	public void init(GameContainer gc, StateBasedGame sbg)
@@ -95,8 +101,20 @@ public class Play extends BasicGameState {
 			g.drawImage(charImg, character.getX(), character.getY());
 		}
 		
-		if(!character.getFireballs().isEmpty()) {
-			for(Projectile f : character.getFireballs()) {
+		if (Keyboard.isKeyDown(Input.KEY_P)) {
+			if (cooldown >= 30) {
+				cooldown = 0;
+				try {
+					shoot(gc, character.getX(), character.getY(), character.getDirection());
+				} catch (SlickException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		cooldown++;
+		
+		if(!fireballs.isEmpty()) {
+			for(Projectile f : fireballs) {
 				g.drawImage(f.getImage(), f.getX(), f.getY());
 			}
 		}
@@ -117,8 +135,8 @@ public class Play extends BasicGameState {
 			}
 		}
 		
-		if(!character.getFireballs().isEmpty()) {
-			for(Projectile f : character.getFireballs()) {
+		if(!fireballs.isEmpty()) {
+			for(Projectile f : fireballs) {
 				f.move();
 				for(Foe p : foes) {
 					if(checkCollision(f, p)) {
@@ -139,6 +157,8 @@ public class Play extends BasicGameState {
 		float x = f.getImage().getWidth()/2;
 		float y = f.getImage().getHeight()/2;
 		
+		
+		
 		if((x>=foe.getX()&&x<=foe.getImage().getWidth())    &&    (y<=foe.getY()&&y>=foe.getImage().getHeight())) {
 			return true;
 		}
@@ -146,5 +166,25 @@ public class Play extends BasicGameState {
 	}
 	public int getID() {
 		return 2;
+	}
+	
+
+	public void shoot(GameContainer gc, float x, float y, int direction) throws SlickException {
+		Image fireball = new Image("res/fireball.png").getScaledCopy((float) 0.2);
+		switch(direction) {
+		case 1:
+			fireball = fireball.getFlippedCopy(true, false);
+			break;
+		case 2:
+			float rotate = -90;
+			fireball.rotate(rotate);
+			break;
+		case 3:
+			break;
+		case 4:
+			float rotate2 = 90;
+			fireball.rotate(rotate2);
+		}
+		fireballs.add(new Projectile(fireball, gc, x, y, direction));
 	}
 }
