@@ -3,6 +3,7 @@ import org.newdawn.slick.*;
 import org.newdawn.slick.gui.GUIContext;
 import org.newdawn.slick.state.*;
 import org.newdawn.slick.Color;
+import java.util.Iterator;
 
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
@@ -119,10 +120,30 @@ public class Play extends BasicGameState {
 		if(!character.getFireballs().isEmpty()) {
 			for(Projectile f : character.getFireballs()) {
 				f.move();
+				for(Foe p : foes) {
+					if(checkCollision(f, p)) {
+						foes.remove(p);
+					}
+					}
+					
+				
 			}
+		
+		
 		}
+	
 	}
 
+	
+	public boolean checkCollision(Projectile f, Unit foe) {
+		float x = f.getImage().getWidth()/2;
+		float y = f.getImage().getHeight()/2;
+		
+		if((x>=foe.getX()&&x<=foe.getImage().getWidth())    &&    (y<=foe.getY()&&y>=foe.getImage().getHeight())) {
+			return true;
+		}
+		return false;
+	}
 	public int getID() {
 		return 2;
 	}
