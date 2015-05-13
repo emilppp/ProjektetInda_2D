@@ -9,7 +9,6 @@ public class Intro extends BasicGameState{
 	public String musn = "";
 	
 	public Intro(int state) {
-		
 	}
 	
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {

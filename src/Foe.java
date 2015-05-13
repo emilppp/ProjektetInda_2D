@@ -32,6 +32,11 @@ public class Foe extends Unit {
 		setRandomSpawn();
 		setUp(image, imageOrSprite);
 	}
+	
+	public void die(Image image) {
+		imageOrSprite = false;
+		this.sprite = image;
+	}
 	public void chase(Character character) {
 		if (character.getX() > xpos) {
 			xpos += velocity;

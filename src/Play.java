@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 public class Play extends BasicGameState {
 
-	private Image brick, cloud, img1, img2;
+	private Image overworld, brick, cloud, img1, img2, explosion;
 
 	private Random r;
 
@@ -62,10 +62,12 @@ public class Play extends BasicGameState {
 	}
 
 	private void initiateWorld(GameContainer gc) throws SlickException {
+		overworld = new Image("res/overworld.png");
 		brick = new Image("res/brick_block.png");
 		cloud = new Image("res/cloud.png");
 		img1 = new Image("res/Gnome_child_chathead.png");
 		img2 = new Image("res/dogedoge.png");
+		explosion = new Image("res/explosion.png");
 		img1 = img1.getScaledCopy((float) 0.5);
 
 		// Add the character
@@ -85,7 +87,7 @@ public class Play extends BasicGameState {
 	}
 
 	private void drawWorld(GameContainer gc, Graphics g, StateBasedGame sbg) {
-		g.setBackground(Color.white);
+		g.drawImage(overworld, 0, 0);
 
 		if (!moving_scenery.isEmpty()) {
 			for (Unit u : moving_scenery) {
@@ -115,7 +117,7 @@ public class Play extends BasicGameState {
 		}
 
 		if (Keyboard.isKeyDown(Input.KEY_P)) {
-			if (cooldown >= 30) {
+			if (cooldown >= 15) {
 				cooldown = 0;
 				try {
 					shoot(gc, character.getX(), character.getY(),
