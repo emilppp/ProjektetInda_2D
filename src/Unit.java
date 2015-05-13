@@ -11,7 +11,7 @@ public class Unit {
 	protected float xpos;
 	protected float ypos;
 		
-	protected int velocity;
+	protected float velocity;
 	
 	protected Image image;
 	protected Image sprite;

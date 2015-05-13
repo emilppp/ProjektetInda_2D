@@ -5,14 +5,14 @@ import org.newdawn.slick.Image;
 
 public class Cloud extends Unit {
 
-	public Cloud(Image image, GameContainer gc) {
+	public Cloud(Image image, GameContainer gc, int direction) {
 		super.gc = gc;
-		setUp(image.getScaledCopy(r.nextInt(2) + 1), false);
-		setRandomDirection();
-		velocity = r.nextInt(3) + 1;
+		setUp(image.getScaledCopy(r.nextInt(3) + 1), false);
+		this.direction = direction;
+		velocity = (float) (r.nextInt(3) + 1 * 0.1);
 
 		xpos = r.nextInt(gc.getWidth() + 50) - 50;
-		ypos = r.nextInt(gc.getHeight() / 2);
+		ypos = r.nextInt(gc.getHeight());
 	}
 
 	// TJENARE BENNY
@@ -22,8 +22,14 @@ public class Cloud extends Unit {
 		case 1:
 			xpos -= velocity;
 			break;
+		case 2:
+			ypos -= velocity;
+			break;
 		case 3:
 			xpos += velocity;
+			break;
+		case 4:
+			ypos += velocity;
 			break;
 		}
 
@@ -34,7 +40,7 @@ public class Cloud extends Unit {
 			xpos = gc.getWidth();
 		}
 	}
-	
+//	
 	public void setRandomDirection() {
 		int direc = r.nextInt(2);
 		if(direc == 0) {

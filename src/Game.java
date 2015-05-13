@@ -19,7 +19,6 @@ public class Game extends StateBasedGame{
 	public Game(String gamename) {
 		super(gamename);
 		
-		
 		// ADDS THE STATES. WILL BE CLASSES
 		this.addState(new Intro(intro));
 		this.addState(new Menu(menu));
@@ -30,7 +29,10 @@ public class Game extends StateBasedGame{
 	
 	
 	public void initStatesList(GameContainer gc) throws SlickException {
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 
 	}
 	

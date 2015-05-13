@@ -8,12 +8,15 @@ import org.newdawn.slick.Color;
 import java.util.Random;
 import java.util.Timer;
 import java.util.Iterator;
+import java.util.Random;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 
 public class Play extends BasicGameState {
 
-	Image brick, cloud;
+	private Image brick, cloud, img1, img2;
+	
+	private Random r;
 
 	private ArrayList<Unit> moving_scenery;
 	private ArrayList<Foe> foes;
@@ -35,7 +38,11 @@ public class Play extends BasicGameState {
 		foes = new ArrayList<Foe>();
 		moving_scenery = new ArrayList<Unit>();
 		fireballs = new ArrayList<Projectile>();
+<<<<<<< Updated upstream
 		tid = new Timer();
+=======
+		r = new Random();
+>>>>>>> Stashed changes
 	}
 
 	public void init(GameContainer gc, StateBasedGame sbg)
@@ -57,6 +64,7 @@ public class Play extends BasicGameState {
 	private void initiateWorld(GameContainer gc) throws SlickException {
 		brick = new Image("res/brick_block.png");
 		cloud = new Image("res/cloud.png");
+<<<<<<< Updated upstream
 		Image img1 = new Image("res/Gnome_child_chathead.png");
 		Image img2 = new Image("res/dogedoge.png");
 		img1 = img1.getScaledCopy((float) 0.5);
@@ -72,6 +80,27 @@ public class Play extends BasicGameState {
 			moving_scenery.add(new Cloud(cloud, gc));
 		}
 		}
+=======
+		img1 = new Image("res/Gnome_child_chathead.png");
+		img2 = new Image("res/dogedoge.png");
+		img1 = img1.getScaledCopy((float) 0.8);
+
+		// Add the character
+		character = new Character(img1, false, gc);
+
+		// Add the foes
+		for (int i = 0; i < 30; i++) {
+		foes.add(new Foe(img2, true, gc));
+		}
+
+		// Add the clouds
+		int cloudDirection = r.nextInt(4) + 1;
+		for (int i = 0; i < 30; i++) {
+			
+			moving_scenery.add(new Cloud(cloud, gc, cloudDirection));
+		}
+	}
+>>>>>>> Stashed changes
 
 	private void drawWorld(GameContainer gc, Graphics g) {
 		g.setBackground(Color.white);
@@ -140,7 +169,7 @@ public class Play extends BasicGameState {
 
 		if (!fireballs.isEmpty()) {
 			checkFireballs(gc);
-			for(Projectile f : fireballs) {
+			for (Projectile f : fireballs) {
 				f.move();
 			}
 		}
@@ -149,36 +178,33 @@ public class Play extends BasicGameState {
 
 	public void checkFireballs(GameContainer gc) {
 		Iterator<Projectile> iterBalls = fireballs.iterator();
-		while(iterBalls.hasNext()) {
+		while (iterBalls.hasNext()) {
 			Projectile fb = iterBalls.next();
-			if(fb.getX() > gc.getWidth() || 
-					fb.getX() < -fb.getImage().getWidth() || 
-						fb.getY() > gc.getHeight() || 
-							fb.getY() < -fb.getImage().getHeight()) {
+			if (fb.getX() > gc.getWidth()
+					|| fb.getX() < -fb.getImage().getWidth()
+					|| fb.getY() > gc.getHeight()
+					|| fb.getY() < -fb.getImage().getHeight()) {
 				iterBalls.remove();
 			}
 		}
-		
-		//Check the doges if collision has occurred
+
+		// Check the doges if collision has occurred
 		Iterator<Foe> iterFoe = foes.iterator();
-		while(iterFoe.hasNext()) {
+		while (iterFoe.hasNext()) {
 			Foe f = iterFoe.next();
-			for(Projectile fb : fireballs) {
+			for (Projectile fb : fireballs) {
 				float midX = fb.getX() + fb.getImage().getWidth() / 2;
 				float midY = fb.getY() + fb.getImage().getHeight() / 2;
-				if(midX < f.getX() + f.getImage().getWidth() && 
-						midX > f.getX() &&
-							midY > f.getY() &&
-								midY < f.getY() + f.getImage().getHeight()) {
+				if (midX < f.getX() + f.getImage().getWidth()
+						&& midX > f.getX() && midY > f.getY()
+						&& midY < f.getY() + f.getImage().getHeight()) {
 					iterFoe.remove();
 					killCount++;
 					System.out.println("COLLISiON ALERT! COLLISION ALERT!");
 				}
 			}
 		}
-		
-		
-		
+
 	}
 
 	public int getID() {
@@ -205,10 +231,10 @@ public class Play extends BasicGameState {
 		}
 		fireballs.add(new Projectile(fireball, gc, x, y, direction));
 	}
-	
+
 	public void drawInterface(GameContainer gc, Graphics g) {
 		g.setColor(Color.black);
-		g.drawString("Killcount = " + killCount, 800, 20);
-		
+		g.drawString("KEEL COUNT = " + killCount, 800, 20);
+
 	}
 }
