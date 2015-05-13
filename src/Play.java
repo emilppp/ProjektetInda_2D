@@ -5,6 +5,8 @@ import org.newdawn.slick.gui.GUIContext;
 import org.newdawn.slick.state.*;
 import org.newdawn.slick.Color;
 
+import java.util.Random;
+import java.util.Timer;
 import java.util.Iterator;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
@@ -17,7 +19,8 @@ public class Play extends BasicGameState {
 	private ArrayList<Foe> foes;
 	private ArrayList<Projectile> fireballs;
 	private int killCount;
-
+	private Timer tid;
+	
 	Character character;
 	// fireball cooldown
 	private float cooldown;
@@ -32,6 +35,7 @@ public class Play extends BasicGameState {
 		foes = new ArrayList<Foe>();
 		moving_scenery = new ArrayList<Unit>();
 		fireballs = new ArrayList<Projectile>();
+		tid = new Timer();
 	}
 
 	public void init(GameContainer gc, StateBasedGame sbg)
@@ -55,23 +59,19 @@ public class Play extends BasicGameState {
 		cloud = new Image("res/cloud.png");
 		Image img1 = new Image("res/Gnome_child_chathead.png");
 		Image img2 = new Image("res/dogedoge.png");
-		img1 = img1.getScaledCopy((float) 0.8);
+		img1 = img1.getScaledCopy((float) 0.5);
 		// cloud = cloud.getScaledCopy((float) 1.5);
 
 		// Add the character
 		character = new Character(img1, false, gc);
-
-		// Add the foes
-		//for (int i = 0; i < 1; i++) {
-			//foes.add(new Foe(img2, true, gc, 50, 50, 1));
-			foes.add(new Foe(img2, true, gc));
-		//}
+		
+		foes.add(new Foe(img2, true, gc, 50, 50, 1));
 
 		// Add the clouds
-	//	for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < 5; i++) {
 			moving_scenery.add(new Cloud(cloud, gc));
-	//	}
-	}
+		}
+		}
 
 	private void drawWorld(GameContainer gc, Graphics g) {
 		g.setBackground(Color.white);
