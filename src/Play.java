@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class Play extends BasicGameState {
 
 	private Image brick, cloud, img1, img2;
-	
+
 	private Random r;
 
 	private ArrayList<Unit> moving_scenery;
@@ -23,7 +23,8 @@ public class Play extends BasicGameState {
 	private ArrayList<Projectile> fireballs;
 	private int killCount;
 	private Timer tid;
-	
+	private int respawnTimer;
+
 	Character character;
 	// fireball cooldown
 	private float cooldown;
@@ -38,11 +39,9 @@ public class Play extends BasicGameState {
 		foes = new ArrayList<Foe>();
 		moving_scenery = new ArrayList<Unit>();
 		fireballs = new ArrayList<Projectile>();
-<<<<<<< Updated upstream
 		tid = new Timer();
-=======
+		respawnTimer = 0;
 		r = new Random();
->>>>>>> Stashed changes
 	}
 
 	public void init(GameContainer gc, StateBasedGame sbg)
@@ -52,57 +51,40 @@ public class Play extends BasicGameState {
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g)
 			throws SlickException {
-		drawWorld(gc, g);
+		drawWorld(gc, g, sbg);
 		drawInterface(gc, g);
 	}
 
 	public void update(GameContainer gc, StateBasedGame sbg, int delta)
 			throws SlickException {
-		moveEntities(gc);
+		moveEntities(gc, sbg);
+		respawn(gc);
 	}
 
 	private void initiateWorld(GameContainer gc) throws SlickException {
 		brick = new Image("res/brick_block.png");
 		cloud = new Image("res/cloud.png");
-<<<<<<< Updated upstream
-		Image img1 = new Image("res/Gnome_child_chathead.png");
-		Image img2 = new Image("res/dogedoge.png");
-		img1 = img1.getScaledCopy((float) 0.5);
-		// cloud = cloud.getScaledCopy((float) 1.5);
-
-		// Add the character
-		character = new Character(img1, false, gc);
-		
-		foes.add(new Foe(img2, true, gc, 50, 50, 1));
-
-		// Add the clouds
-		for (int i = 0; i < 5; i++) {
-			moving_scenery.add(new Cloud(cloud, gc));
-		}
-		}
-=======
 		img1 = new Image("res/Gnome_child_chathead.png");
 		img2 = new Image("res/dogedoge.png");
-		img1 = img1.getScaledCopy((float) 0.8);
+		img1 = img1.getScaledCopy((float) 0.5);
 
 		// Add the character
 		character = new Character(img1, false, gc);
 
 		// Add the foes
-		for (int i = 0; i < 30; i++) {
-		foes.add(new Foe(img2, true, gc));
+		for (int i = 0; i < 5; i++) {
+			foes.add(new Foe(img2, true, gc));
 		}
 
 		// Add the clouds
 		int cloudDirection = r.nextInt(4) + 1;
 		for (int i = 0; i < 30; i++) {
-			
+
 			moving_scenery.add(new Cloud(cloud, gc, cloudDirection));
 		}
 	}
->>>>>>> Stashed changes
 
-	private void drawWorld(GameContainer gc, Graphics g) {
+	private void drawWorld(GameContainer gc, Graphics g, StateBasedGame sbg) {
 		g.setBackground(Color.white);
 
 		if (!moving_scenery.isEmpty()) {
@@ -152,13 +134,23 @@ public class Play extends BasicGameState {
 		}
 	}
 
-	private void moveEntities(GameContainer gc) {
+	private void moveEntities(GameContainer gc, StateBasedGame sbg) {
 		if (character != null) {
 			character.pollInput();
 		}
 		if (!foes.isEmpty()) {
+			float midCharX = character.getX() + character.getImage().getWidth()
+					/ 2;
+			float midCharY = character.getY()
+					+ character.getImage().getHeight() / 2;
 			for (Foe f : foes) {
 				f.chase(character);
+				if (midCharX > f.getX()
+						&& (midCharX < f.getX() + f.getImage().getWidth())
+						&& midCharY > f.getY()
+						&& midCharY < f.getY() + f.getImage().getHeight()) {
+					sbg.enterState(4);
+				}
 			}
 		}
 		if (!moving_scenery.isEmpty()) {
@@ -168,15 +160,14 @@ public class Play extends BasicGameState {
 		}
 
 		if (!fireballs.isEmpty()) {
-			checkFireballs(gc);
+			checkFireballs(gc, sbg);
 			for (Projectile f : fireballs) {
 				f.move();
 			}
 		}
-
 	}
 
-	public void checkFireballs(GameContainer gc) {
+	public void checkFireballs(GameContainer gc, StateBasedGame sbg) {
 		Iterator<Projectile> iterBalls = fireballs.iterator();
 		while (iterBalls.hasNext()) {
 			Projectile fb = iterBalls.next();
@@ -236,5 +227,13 @@ public class Play extends BasicGameState {
 		g.setColor(Color.black);
 		g.drawString("KEEL COUNT = " + killCount, 800, 20);
 
+	}
+
+	public void respawn(GameContainer gc) {
+		if (respawnTimer > (1000 / (killCount + 1))) {
+			foes.add(new Foe(img2, true, gc));
+			respawnTimer = 0;
+		}
+		respawnTimer++;
 	}
 }

@@ -15,6 +15,7 @@ public class Game extends StateBasedGame{
 	public static final int menu = 1;
 	public static final int play = 2;
 	public static final int controls = 3;
+	public static final int death = 4;
 	
 	public Game(String gamename) {
 		super(gamename);
@@ -24,15 +25,12 @@ public class Game extends StateBasedGame{
 		this.addState(new Menu(menu));
 		this.addState(new Play(play));
 		this.addState(new Controls(controls));
+		this.addState(new DeathScreen(death));
 		this.enterState(intro);
 	}
 	
 	
 	public void initStatesList(GameContainer gc) throws SlickException {
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
 
 	}
 	

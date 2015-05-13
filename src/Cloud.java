@@ -9,7 +9,7 @@ public class Cloud extends Unit {
 		super.gc = gc;
 		setUp(image.getScaledCopy(r.nextInt(3) + 1), false);
 		this.direction = direction;
-		velocity = (float) (r.nextInt(3) + 1 * 0.1);
+		velocity = (float) (r.nextInt(2) + 1 * 0.2);
 
 		xpos = r.nextInt(gc.getWidth() + 50) - 50;
 		ypos = r.nextInt(gc.getHeight());

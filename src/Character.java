@@ -9,7 +9,7 @@ public class Character extends Unit {
 	public Character(Image image, boolean imageOrSprite, GameContainer gc) {
 		xpos = 320;
 		ypos = 320;
-		super.velocity = 1;
+		super.velocity = 3;
 		setUp(image, imageOrSprite);
 	}
 
