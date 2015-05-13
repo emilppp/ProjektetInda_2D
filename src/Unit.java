@@ -10,9 +10,7 @@ public class Unit {
 	
 	protected float xpos;
 	protected float ypos;
-	
-	protected int health;
-	
+		
 	protected int velocity;
 	
 	protected Image image;
@@ -20,8 +18,7 @@ public class Unit {
 	protected int spriteCounter;
 	protected int idleCounter;
 	
-	protected int yDirection;
-	protected int xDirection;
+	protected int direction;
 	
 	protected SpriteSheet running;
 	protected Image idleImage;
@@ -43,16 +40,8 @@ public class Unit {
 		return ypos;
 	}
 	
-	public int getYDirection() {
-		return yDirection;
-	}
-	
-	public int getXDirection() {
-		return xDirection;
-	}
-	
-	public int getHealth() {
-		return health;
+	public int getDirection() {
+		return direction;
 	}
 	
 	public void setUp(Image image, boolean imageOrSprite) {
@@ -83,34 +72,21 @@ public class Unit {
 		}
 	}
 	
-	public void setRandomDirection() {
-		int yDirec = r.nextInt(2);
-		int xDirec = r.nextInt(2);
-		if(yDirec == 1) {
-			yDirection = 1;
-		}
-		else {
-			yDirection = -1;
-		}
-		if(xDirec == 1) {
-			xDirection = 1;
-		}
-		else {
-			xDirection = -1;
-					
-		}
-	}
-	
-	public void switchYDirection() {
-		yDirection = -yDirection;
-	}
-	
-	public void switchXDirection() {
-		xDirection = -xDirection;
-	}
-	
 	public void move() {
-		
+		switch (direction) {
+		case 1:
+			xpos -= velocity;
+			break;
+		case 2:
+			ypos -= velocity;
+			break;
+		case 3:
+			xpos += velocity;
+			break;
+		case 4:
+			ypos += velocity;
+			break;
+		}
 	}
 
 }

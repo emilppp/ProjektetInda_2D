@@ -64,10 +64,8 @@ public class Play extends BasicGameState {
 	}
 
 	private void drawWorld(GameContainer gc, Graphics g) {
-		g.setBackground(new Color(0xCCFFFF));
-		for (int i = 0; i * 64 < gc.getWidth(); i++) {
-			g.drawImage(brick, i * 64, 576);
-		}
+		g.setBackground(Color.white);
+		
 		
 		if(!moving_scenery.isEmpty()) {
 			for(Unit u : moving_scenery) {
@@ -78,9 +76,9 @@ public class Play extends BasicGameState {
 		//Draw the foes
 		if (!foes.isEmpty()) {
 			for (Unit f : foes) {
-				int direcConstant = f.getXDirection();
+				int direcConstant = f.getDirection();
 				Image charImg = f.getImage();
-				if (direcConstant == -1) {
+				if (direcConstant == 1) {
 					charImg = charImg.getFlippedCopy(true, false);
 				}
 				g.drawImage(charImg, f.getX(), f.getY());
@@ -88,12 +86,18 @@ public class Play extends BasicGameState {
 		}
 		//Draw the character
 		if (character != null) {
-			int direcConstant = character.getXDirection();
+			int direcConstant = character.getDirection();
 			Image charImg = character.getImage();
-			if (direcConstant == -1) {
+			if (direcConstant == 1) {
 				charImg = charImg.getFlippedCopy(true, false);
 			}
 			g.drawImage(charImg, character.getX(), character.getY());
+		}
+		
+		if(!character.getFireballs().isEmpty()) {
+			for(Projectile f : character.getFireballs()) {
+				g.drawImage(f.getImage(), f.getX(), f.getY());
+			}
 		}
 	}
 	
@@ -109,6 +113,12 @@ public class Play extends BasicGameState {
 		if(!moving_scenery.isEmpty()) {
 			for(Unit u : moving_scenery) {
 				u.move();
+			}
+		}
+		
+		if(!character.getFireballs().isEmpty()) {
+			for(Projectile f : character.getFireballs()) {
+				f.move();
 			}
 		}
 	}
