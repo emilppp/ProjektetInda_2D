@@ -22,9 +22,9 @@ public class Menu extends BasicGameState{
 	}
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-		g.drawImage(playnow, 240, 230);
-		g.drawImage(controls, 240, 290);
-		g.drawImage(quit, 240, 350);
+		g.drawImage(playnow, 400, 230);
+		g.drawImage(controls, 400, 290);
+		g.drawImage(quit, 400, 350);
 		
 		g.drawString(musn, 50, 50);
 		
@@ -35,17 +35,17 @@ public class Menu extends BasicGameState{
 
 		int xpos = Mouse.getX();
 		int ypos = Math.abs(gc.getHeight() - Mouse.getY());
-		if((xpos>241&&xpos<363)&&(ypos>230&&ypos<265)) {
+		if((xpos>400&&xpos<524)&&(ypos>230&&ypos<265)) {
 			if(input.isMouseButtonDown(0)) {
 				sbg.enterState(2);
 			}
 		}
-		if((xpos>241&&xpos<363)&&(ypos>290&&ypos<325)) {
+		if((xpos>400&&xpos<524)&&(ypos>290&&ypos<325)) {
 			if(input.isMouseButtonDown(0)) {
 				sbg.enterState(3);
 			}
 		}
-		if((xpos>241&&xpos<363)&&(ypos>350&&ypos<385)) {
+		if((xpos>400&&xpos<524)&&(ypos>350&&ypos<385)) {
 			if(input.isMouseButtonDown(0)) {
 				gc.exit();
 			}

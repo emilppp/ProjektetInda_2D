@@ -19,9 +19,9 @@ public class Intro extends BasicGameState{
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 	
-		g.drawString("Welcome!", 265, 80);
-		g.drawImage(intro, 75, 300);
-		g.drawImage(continuepic, 240, 200);
+		g.drawString("Welcome!", 440, 80);
+		g.drawImage(intro, 230, 300);
+		g.drawImage(continuepic, 420, 200);
 		
 		g.drawString(musn, 500, 500);
 	}
@@ -32,7 +32,7 @@ public class Intro extends BasicGameState{
 		
 		int xpos = Mouse.getX();
 		int ypos = Math.abs(gc.getHeight() - Mouse.getY());
-		if((xpos>240&&xpos<358)&&(ypos>200&&ypos<235)) {
+		if((xpos>420&&xpos<539)&&(ypos>200&&ypos<235)) {
 			if(input.isMouseButtonDown(0)) {
 				sbg.enterState(1);
 			}

@@ -52,8 +52,9 @@ public class Play extends BasicGameState {
 		character = new Character(img1, false, gc);
 
 		//Add the foes
-		for (int i = 0; i < 1; i++) {
+		for (int i = 0; i < 5; i++) {
 			foes.add(new Foe(img2, true, gc, 50, 50, 1));
+			foes.add(new Foe(img2, true, gc));
 		}
 		
 		//Add the clouds
