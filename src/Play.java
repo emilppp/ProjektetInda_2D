@@ -16,6 +16,7 @@ public class Play extends BasicGameState {
 	private ArrayList<Unit> moving_scenery;
 	private ArrayList<Foe> foes;
 	private ArrayList<Projectile> fireballs;
+	private int killCount;
 
 	Character character;
 	// fireball cooldown
@@ -27,6 +28,7 @@ public class Play extends BasicGameState {
 	public Play(int state) {
 		character = null;
 		cooldown = 0;
+		killCount = 0;
 		foes = new ArrayList<Foe>();
 		moving_scenery = new ArrayList<Unit>();
 		fireballs = new ArrayList<Projectile>();
@@ -40,6 +42,7 @@ public class Play extends BasicGameState {
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g)
 			throws SlickException {
 		drawWorld(gc, g);
+		drawInterface(gc, g);
 	}
 
 	public void update(GameContainer gc, StateBasedGame sbg, int delta)
@@ -59,15 +62,15 @@ public class Play extends BasicGameState {
 		character = new Character(img1, false, gc);
 
 		// Add the foes
-		for (int i = 0; i < 5; i++) {
-			foes.add(new Foe(img2, true, gc, 50, 50, 1));
+		//for (int i = 0; i < 1; i++) {
+			//foes.add(new Foe(img2, true, gc, 50, 50, 1));
 			foes.add(new Foe(img2, true, gc));
-		}
+		//}
 
 		// Add the clouds
-		for (int i = 0; i < 5; i++) {
+	//	for (int i = 0; i < 5; i++) {
 			moving_scenery.add(new Cloud(cloud, gc));
-		}
+	//	}
 	}
 
 	private void drawWorld(GameContainer gc, Graphics g) {
@@ -168,10 +171,12 @@ public class Play extends BasicGameState {
 							midY > f.getY() &&
 								midY < f.getY() + f.getImage().getHeight()) {
 					iterFoe.remove();
+					killCount++;
 					System.out.println("COLLISiON ALERT! COLLISION ALERT!");
 				}
 			}
 		}
+		
 		
 		
 	}
@@ -199,5 +204,11 @@ public class Play extends BasicGameState {
 			fireball.rotate(rotate2);
 		}
 		fireballs.add(new Projectile(fireball, gc, x, y, direction));
+	}
+	
+	public void drawInterface(GameContainer gc, Graphics g) {
+		g.setColor(Color.black);
+		g.drawString("Killcount = " + killCount, 800, 20);
+		
 	}
 }
