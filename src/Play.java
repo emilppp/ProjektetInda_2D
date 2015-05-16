@@ -21,8 +21,7 @@ public class Play extends BasicGameState {
 	private ArrayList<Unit> moving_scenery;
 	private ArrayList<Foe> foes;
 	private ArrayList<Projectile> fireballs;
-	private int killCount;
-	private Timer tid;
+	public static int killCount;
 	private int respawnTimer;
 
 	Character character;
@@ -33,19 +32,22 @@ public class Play extends BasicGameState {
 	float menuY = 200;
 
 	public Play(int state) {
+	
 		character = null;
 		cooldown = 0;
 		killCount = 0;
 		foes = new ArrayList<Foe>();
 		moving_scenery = new ArrayList<Unit>();
 		fireballs = new ArrayList<Projectile>();
-		tid = new Timer();
 		respawnTimer = 0;
 		r = new Random();
 	}
 
 	public void init(GameContainer gc, StateBasedGame sbg)
 			throws SlickException {
+		if(foes != null) {
+			reset();
+		}
 		initiateWorld(gc);
 	}
 
@@ -204,6 +206,12 @@ public class Play extends BasicGameState {
 		return 2;
 	}
 
+	
+	public void reset() {
+		foes.clear();
+		killCount = 0;
+		
+	}
 	public void shoot(GameContainer gc, float x, float y, int direction)
 			throws SlickException {
 		Image fireball = new Image("res/fireball.png")
@@ -229,6 +237,10 @@ public class Play extends BasicGameState {
 		g.setColor(Color.black);
 		g.drawString("KEEL COUNT = " + killCount, 800, 20);
 
+	}
+	
+	public int getKillCount() {
+		return killCount;
 	}
 
 	public void respawn(GameContainer gc) {

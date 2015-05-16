@@ -7,7 +7,7 @@ public class Projectile extends Unit {
 		super.gc = gc;
 		
 		setUp(image, imageOrSprite);
-		velocity = 6;
+		super.velocity = 6;
 		this.direction = direction;
 		this.xpos = xpos - image.getWidth() / 3;
 		this.ypos = ypos + 5;
