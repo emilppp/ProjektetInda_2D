@@ -5,7 +5,6 @@ import org.newdawn.slick.*;
 import org.newdawn.slick.state.*;
 
 public class DeathScreen extends BasicGameState{
-	public Image doge;
 	public Image playagain;
 	public String musn;
 
@@ -13,7 +12,6 @@ public class DeathScreen extends BasicGameState{
 	}
 	
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
-		doge = new Image("res/dogeicon.png");
 		playagain = new Image("res/playagain.png");
 
 	}
@@ -21,10 +19,7 @@ public class DeathScreen extends BasicGameState{
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		g.setBackground(Color.black);
 		g.setColor(Color.white);
-		g.drawString("i cri evrtiem", gc.getWidth() / 2, gc.getHeight() / 2);
-		g.drawString("u r dead. was kild by doge", gc.getWidth() / 2, (gc.getHeight() / 2) + 30);
 		g.drawString("kills = " + Play.killCount, 400, 130);
-		g.drawImage(doge, 480, 380);
 		g.drawImage(playagain, 400, 230);
 		g.drawString(musn, 50, 50);
 		

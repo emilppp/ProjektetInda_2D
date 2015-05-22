@@ -8,6 +8,7 @@ public class Menu extends BasicGameState{
 	public Image playnow;
 	public Image quit;
 	public Image controls;
+	public Image cool_background;
 	public String musn;
 
 	
@@ -19,17 +20,22 @@ public class Menu extends BasicGameState{
 		playnow = new Image("res/playnow.png");
 		controls = new Image("res/controls.png");
 		quit = new Image("res/quit.png");
+		cool_background = new Image("res/cool_background.png");
 	}
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
+		g.drawImage(cool_background, 0, 0);
 		g.drawImage(playnow, 400, 230);
 		g.drawImage(controls, 400, 290);
 		g.drawImage(quit, 400, 350);
 		
-		g.drawString(musn, 50, 50);
+		//g.drawString(musn, 50, 50);
 		
 	}	
 	
+	/**
+	 * Draw all the buttons and make them click-able.
+	 */
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
 		Input input = gc.getInput();
 
@@ -50,9 +56,6 @@ public class Menu extends BasicGameState{
 				gc.exit();
 			}
 		}
-		musn = "X= " + xpos + "\nY= " + ypos;
-
-
 		
 	}
 	public int getID() {

@@ -6,7 +6,6 @@ import org.newdawn.slick.state.*;
 
 public class Controls extends BasicGameState{
 	public Image back;
-	public String musn;
 
 	
 	public Controls(int state) {
@@ -19,9 +18,8 @@ public class Controls extends BasicGameState{
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		g.setColor(Color.pink);
-		g.drawString("Movement: W A S D\nAttack: A", 402, 80);
+		g.drawString("Movement: W A S D\nAttack: Shoot with arrow keys", 402, 80);
 		g.drawImage(back, 400, 430);
-		g.drawString(musn, 50, 50);
 		
 		
 		
@@ -38,7 +36,6 @@ public class Controls extends BasicGameState{
 				sbg.enterState(1);
 			}
 		}
-		musn = "X= " + xpos + "\nY= " + ypos;
 
 
 		

@@ -3,9 +3,6 @@ import org.lwjgl.input.Keyboard;
 import org.newdawn.slick.*;
 import org.newdawn.slick.state.*;
 
-
-
-
 public class Game extends StateBasedGame{
 	
 	public static final String gamename = "SPELETS_NAMN";
@@ -47,4 +44,6 @@ public class Game extends StateBasedGame{
 			e.printStackTrace();
 		}
 	}
+	
+	
 }

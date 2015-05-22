@@ -14,38 +14,52 @@ import java.util.ArrayList;
 
 public class Play extends BasicGameState {
 
-	private Image overworld, brick, cloud, img1, img2, explosion;
+	//The image
+	private Image overworld, cloud, img1, img2, bird, missiles, terrain;
+	
+	//The arraylist storing the different terrain images. Before each new game, a random terrain is selected.
+	private ArrayList<Image> terrains;
 
 	private Random r;
 
+	//The arraylist storing all the moving scenery on the map; clouds and birds. None of these are removed during gameplay, but will
+	//just fly in specific patterns.
 	private ArrayList<Unit> moving_scenery;
+	
+	//The arraylist storing all the foes currently spawned. When a foe dies, it is removed from this arraylist.
 	private ArrayList<Foe> foes;
-	private ArrayList<Projectile> fireballs;
+	
+	//The arraylist storing all the projectiles fired by the player.
+	private ArrayList<Projectile> projectiles;
+	
+	//The number of enemies the character has defeated.
 	public static int killCount;
-	private int respawnTimer;
+	
+	//The timer that checks when the foes may spawn. When the respawn timer reaches the value of the cooldown, a new foe will spawn, after which
+	//the timer will reset to zero.
+	private int respawnCD = 500;
+	private int respawnTimer = 0;
 
 	Character character;
-	// fireball cooldown
-	private float cooldown;
-
-	float menuX = 200;
-	float menuY = 200;
+	// projectile cooldown and timer. When the timer reaches the value of the projectile cooldown, a new projectile is ready
+	//to be fired. After firing, the cooldown timer will reset to zero.
+	private float projectileCD = 25;
+	private float projectileTimer = 0;
 
 	public Play(int state) {
-	
+
 		character = null;
-		cooldown = 0;
 		killCount = 0;
 		foes = new ArrayList<Foe>();
 		moving_scenery = new ArrayList<Unit>();
-		fireballs = new ArrayList<Projectile>();
-		respawnTimer = 0;
+		terrains = new ArrayList<Image>();
+		projectiles = new ArrayList<Projectile>();
 		r = new Random();
 	}
 
 	public void init(GameContainer gc, StateBasedGame sbg)
 			throws SlickException {
-		if(foes != null) {
+		if (foes != null) {
 			reset();
 		}
 		initiateWorld(gc);
@@ -60,99 +74,141 @@ public class Play extends BasicGameState {
 	public void update(GameContainer gc, StateBasedGame sbg, int delta)
 			throws SlickException {
 		moveEntities(gc, sbg);
-		respawn(gc);
+		spawnFoes(gc);
 	}
 
+	/**
+	 * Prepare the world, loading all the images as well as creating the character, foes and scenery.
+	 * @param gc
+	 * @throws SlickException
+	 */
 	private void initiateWorld(GameContainer gc) throws SlickException {
+		// images
 		overworld = new Image("res/overworld.png");
-		brick = new Image("res/brick_block.png");
 		cloud = new Image("res/cloud.png");
-		img1 = new Image("res/Gnome_child_chathead.png");
-		img2 = new Image("res/dogedoge.png");
-		explosion = new Image("res/explosion.png");
-		img1 = img1.getScaledCopy((float) 0.5);
+		img1 = new Image("res/starship.png");
+		img2 = new Image("res/ufo.png");
+		bird = new Image("res/birds.png");
+		missiles = new Image("res/missiles.png");
+		terrains.add(new Image("res/overworld.png"));
+		terrains.add(new Image("res/overworld_desert.png"));
+		terrains.add(new Image("res/overworld_ocean.png"));
+		terrains.add(new Image("res/overworld_city.png"));
+		terrains.add(new Image("res/overworld_canyon.png"));
+		terrain = terrains.get(r.nextInt(terrains.size()));
+
+		img1 = img1.getScaledCopy(0.3f);
+		//img2 = img2.getScaledCopy(0.3f);
 
 		// Add the character
 		character = new Character(img1, false, gc);
 
-		// Add the foes
-		for (int i = 0; i < 5; i++) {
-			foes.add(new Foe(img2, true, gc));
-		}
-
 		// Add the clouds
 		int cloudDirection = r.nextInt(4) + 1;
-		for (int i = 0; i < 30; i++) {
-
+		for (int i = 0; i < 20; i++) {
 			moving_scenery.add(new Cloud(cloud, gc, cloudDirection));
+		}
+		// Add the birds
+		for (int i = 0; i < 10; i++) {
+			moving_scenery.add(new Bird(bird, gc, cloudDirection));
 		}
 	}
 
+	/**
+	 * Draws the world and everything in it, like the player and the foes as well as the scenery, based on their respective locations and values.
+	 * NOTE: This method also contains the fire command (if the correct key is pressed, call the shoot() function.
+	 * @param gc
+	 * @param g
+	 * @param sbg
+	 */
 	private void drawWorld(GameContainer gc, Graphics g, StateBasedGame sbg) {
-		g.drawImage(overworld, 0, 0);
+		g.drawImage(terrain, 0, 0);
 
 		if (!moving_scenery.isEmpty()) {
 			for (Unit u : moving_scenery) {
-				g.drawImage(u.getImage(), u.getX(), u.getY());
+				g.drawImage(u.getSprite(), u.getX(), u.getY());
 			}
 		}
 
 		// Draw the foes
 		if (!foes.isEmpty()) {
 			for (Unit f : foes) {
-				int direcConstant = f.getDirection();
-				Image charImg = f.getImage();
-				if (direcConstant == 1) {
-					charImg = charImg.getFlippedCopy(true, false);
-				}
-				g.drawImage(charImg, f.getX(), f.getY());
+				g.drawImage(f.getSprite(), f.getX(), f.getY());
 			}
 		}
 		// Draw the character
 		if (character != null) {
-			int direcConstant = character.getDirection();
-			Image charImg = character.getImage();
-			if (direcConstant == 1) {
-				charImg = charImg.getFlippedCopy(true, false);
-			}
-			g.drawImage(charImg, character.getX(), character.getY());
+			g.drawImage(character.getSprite(), character.getX(),
+					character.getY());
 		}
-
 		if (Keyboard.isKeyDown(Input.KEY_P)) {
-			if (cooldown >= 15) {
-				cooldown = 0;
+			if (projectileTimer >= projectileCD) {
+				//The angle of the projectiles, based on the characters current direction.
+				int projectileAngle = Math.round(character.getSprite().getRotation());
+				int projectileDirection= character.getDirection();
+				switch(projectileAngle) {
+				case 180:
+					projectileDirection = 1;
+					break;
+				case -90:
+					projectileDirection = 2;
+					break;
+				case 0:
+					projectileDirection = 3;
+					break;
+				case 90:
+					projectileDirection = 4;
+					break;
+				case 135:
+					projectileDirection = 5;
+					break;
+				case -135:
+					projectileDirection = 6;
+					break;
+				case -45:
+					projectileDirection = 7;
+					break;
+				case 45:
+					projectileDirection = 8;
+					break;
+				}
 				try {
-					shoot(gc, character.getX(), character.getY(),
-							character.getDirection());
+					shoot(gc, character.getCenterX(), character.getCenterY(),
+							projectileDirection);
+					projectileTimer = 0;
 				} catch (SlickException e) {
 					e.printStackTrace();
 				}
 			}
 		}
-		cooldown++;
+		projectileTimer++;
 
-		if (!fireballs.isEmpty()) {
-			for (Projectile f : fireballs) {
-				g.drawImage(f.getImage(), f.getX(), f.getY());
+		if (!projectiles.isEmpty()) {
+			for (Projectile f : projectiles) {
+				g.drawImage(f.getSprite(), f.getX(), f.getY());
 			}
 		}
 	}
 
+	/**
+	 * Moves all the entities on the field. The entities covers all the objects inheriting from the Unit class, eg. the character, the foes as
+	 * well as the clouds and birds.
+	 * @param gc
+	 * @param sbg
+	 */
 	private void moveEntities(GameContainer gc, StateBasedGame sbg) {
 		if (character != null) {
 			character.pollInput();
 		}
 		if (!foes.isEmpty()) {
-			float midCharX = character.getX() + character.getImage().getWidth()
-					/ 2;
-			float midCharY = character.getY()
-					+ character.getImage().getHeight() / 2;
+			float midCharX = character.getCenterX();
+			float midCharY = character.getCenterY();
 			for (Foe f : foes) {
 				f.chase(character);
 				if (midCharX > f.getX()
-						&& (midCharX < f.getX() + f.getImage().getWidth())
+						&& (midCharX < f.getX() + f.getSprite().getWidth())
 						&& midCharY > f.getY()
-						&& midCharY < f.getY() + f.getImage().getHeight()) {
+						&& midCharY < f.getY() + f.getSprite().getHeight()) {
 					sbg.enterState(4);
 				}
 			}
@@ -163,22 +219,27 @@ public class Play extends BasicGameState {
 			}
 		}
 
-		if (!fireballs.isEmpty()) {
-			checkFireballs(gc, sbg);
-			for (Projectile f : fireballs) {
+		if (!projectiles.isEmpty()) {
+			checkProjectiles(gc, sbg);
+			for (Projectile f : projectiles) {
 				f.move();
 			}
 		}
 	}
 
-	public void checkFireballs(GameContainer gc, StateBasedGame sbg) {
-		Iterator<Projectile> iterBalls = fireballs.iterator();
+	/**
+	 * Check to see if the fireballs has hit a target. Should that be the case, erase the target.
+	 * @param gc
+	 * @param sbg
+	 */
+	public void checkProjectiles(GameContainer gc, StateBasedGame sbg) {
+		Iterator<Projectile> iterBalls = projectiles.iterator();
 		while (iterBalls.hasNext()) {
 			Projectile fb = iterBalls.next();
 			if (fb.getX() > gc.getWidth()
-					|| fb.getX() < -fb.getImage().getWidth()
+					|| fb.getX() < -fb.getSprite().getWidth()
 					|| fb.getY() > gc.getHeight()
-					|| fb.getY() < -fb.getImage().getHeight()) {
+					|| fb.getY() < -fb.getSprite().getHeight()) {
 				iterBalls.remove();
 			}
 		}
@@ -187,67 +248,84 @@ public class Play extends BasicGameState {
 		Iterator<Foe> iterFoe = foes.iterator();
 		while (iterFoe.hasNext()) {
 			Foe f = iterFoe.next();
-			for (Projectile fb : fireballs) {
-				float midX = fb.getX() + fb.getImage().getWidth() / 2;
-				float midY = fb.getY() + fb.getImage().getHeight() / 2;
-				if (midX < f.getX() + f.getImage().getWidth()
+			for (Projectile fb : projectiles) {
+				float midX = fb.getX() + fb.getSprite().getWidth() / 2;
+				float midY = fb.getY() + fb.getSprite().getHeight() / 2;
+				if (midX < f.getX() + f.getSprite().getWidth()
 						&& midX > f.getX() && midY > f.getY()
-						&& midY < f.getY() + f.getImage().getHeight()) {
+						&& midY < f.getY() + f.getSprite().getHeight()) {
 					iterFoe.remove();
 					killCount++;
-					System.out.println("COLLISiON ALERT! COLLISION ALERT!");
 				}
 			}
 		}
-
 	}
 
 	public int getID() {
 		return 2;
 	}
 
-	
+	/**
+	 * Reset this game, resetting the arrays and clearing the field of all foes and scenery.
+	 */
 	public void reset() {
 		foes.clear();
+		projectiles.clear();
 		killCount = 0;
-		
+		moving_scenery.clear();
+
 	}
+
+	/*
+	 * The shoot method. This is called whenever the button P is pressed, and creates a 
+	 */
 	public void shoot(GameContainer gc, float x, float y, int direction)
 			throws SlickException {
-		Image fireball = new Image("res/fireball.png")
-				.getScaledCopy((float) 0.2);
-		switch (direction) {
-		case 1:
-			fireball = fireball.getFlippedCopy(true, false);
-			break;
-		case 2:
-			float rotate = -90;
-			fireball.rotate(rotate);
-			break;
-		case 3:
-			break;
-		case 4:
-			float rotate2 = 90;
-			fireball.rotate(rotate2);
-		}
-		fireballs.add(new Projectile(fireball, gc, x, y, direction));
+		Image fireball = missiles.getScaledCopy(0.3f);
+		projectiles.add(new Projectile(fireball, gc, x, y, direction, character.getSpeed()));
 	}
 
+	/**
+	 * Draw the interface with text signifying the kill count as well as the number of enemies on the field.
+	 * @param gc
+	 * @param g
+	 */
 	public void drawInterface(GameContainer gc, Graphics g) {
-		g.setColor(Color.black);
-		g.drawString("KEEL COUNT = " + killCount, 800, 20);
+		g.setColor(Color.white);
+		g.drawString("Kill count: " + killCount, 10, 25);
+		g.drawString("Enemies: " + foes.size(), 10, 40);
 
 	}
-	
+
+	/**
+	 * Returns the kill count.
+	 * @return
+	 */
 	public int getKillCount() {
 		return killCount;
 	}
 
-	public void respawn(GameContainer gc) {
-		if (respawnTimer > (1000 / (killCount + 1))) {
-			foes.add(new Foe(img2, true, gc));
+	/**
+	 * After a set time has passed, proceed with spawning new foes. The spawn rate is proportional to the characters kill count.
+	 * @param gc
+	 */
+	public void spawnFoes(GameContainer gc) {
+		if (respawnTimer > respawnCD/Math.abs(Math.sqrt(killCount+1))) {
+			int foeSpeed = 1;
+			if(killCount > 10) {
+				foeSpeed = Math.round(killCount / 10);
+			}
+			foes.add(new Foe(img2, true, gc, foeSpeed));
 			respawnTimer = 0;
 		}
 		respawnTimer++;
+	}
+
+	/**
+	 * The number of foes the character has defeated.
+	 * @return
+	 */
+	public int killCount() {
+		return killCount;
 	}
 }

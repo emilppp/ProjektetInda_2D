@@ -2,6 +2,7 @@ import java.util.Random;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.SpriteSheet;
 
 public class Cloud extends Unit {
 
@@ -9,14 +10,17 @@ public class Cloud extends Unit {
 		super.gc = gc;
 		setUp(image.getScaledCopy(r.nextInt(3) + 1), false);
 		this.direction = direction;
-		velocity = (float) (r.nextInt(2) + 1 * 0.2);
+		velocity = (r.nextInt(2) + 1) * 0.1f;
 
 		xpos = r.nextInt(gc.getWidth() + 50) - 50;
 		ypos = r.nextInt(gc.getHeight());
 	}
 
-	// TJENARE BENNY
 
+	/**
+	 * Move the cloud according to its direction. Should the cloud reach a certain point outside the screen, send it to the
+	 * opposite side and let it continue in this cycle. The purpose of this is to add a little bit of immersion.
+	 */
 	public void move() {
 		switch (direction) {
 		case 1:
@@ -39,15 +43,15 @@ public class Cloud extends Unit {
 		if (xpos < -image.getWidth()) {
 			xpos = gc.getWidth();
 		}
+		if (ypos > gc.getHeight() + image.getHeight()) {
+			ypos = -image.getHeight();
+		}
+		if (ypos < -image.getHeight()) {
+			ypos = gc.getHeight() + image.getHeight();
+					}
 	}
-//	
-	public void setRandomDirection() {
-		int direc = r.nextInt(2);
-		if(direc == 0) {
-			direction = 1;
-		}
-		else {
-			direction = 3;
-		}
+	public void setUp(Image image, boolean imageOrSprite) {
+		this.image = image;
+		sprite = image;
 	}
 }
