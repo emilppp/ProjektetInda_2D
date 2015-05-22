@@ -37,7 +37,7 @@ public class Play extends BasicGameState {
 	
 	//The timer that checks when the foes may spawn. When the respawn timer reaches the value of the cooldown, a new foe will spawn, after which
 	//the timer will reset to zero.
-	private int respawnCD = 500;
+	private int respawnCD = 300;
 	private int respawnTimer = 0;
 
 	Character character;

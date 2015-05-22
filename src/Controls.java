@@ -18,7 +18,7 @@ public class Controls extends BasicGameState{
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		g.setColor(Color.pink);
-		g.drawString("Movement: W A S D\nAttack: Shoot with arrow keys", 402, 80);
+		g.drawString("Movement: W A S D\nShoot: P", 402, 80);
 		g.drawImage(back, 400, 430);
 		
 		
